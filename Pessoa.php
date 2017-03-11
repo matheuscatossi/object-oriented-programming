@@ -1,4 +1,7 @@
 <?php 
+
+	// Matheus Catossi - 11/03/2017
+
 	class Pessoa {
 
 		private $idade;
@@ -8,7 +11,6 @@
 			$this->idade   = $idade;
 			$this->amizade = $amizade;
 		}
-
 
 		function verificarAmizade() {
 			if($this->amizade == true) {
@@ -25,6 +27,4 @@
 				return false;
 			}
 		}
-
-
 	}
