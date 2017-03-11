@@ -1,8 +1,8 @@
 <?php 
 	
 	// Matheus Catossi - 11/03/2017
-
 	// Objeto criado para centralizar todas as funções de Balada
+
 	class Balada {
 
 		private $status;
@@ -17,7 +17,7 @@
 		}
 
 		public function verificarAmizadeBalada($pessoa){
-			return $pessoa->amiza
+			return $pessoa->amizade;
 		}
 
 		public function acessoAmizade($pessoa) {

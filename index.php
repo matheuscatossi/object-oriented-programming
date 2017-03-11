@@ -52,16 +52,16 @@
 			</div>
 		</div>";
 	}
-
 ?>
-
 <html>
 	<head>
-		<title>Index</title>
+		<title>Baladinha</title>
+
 		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">
 		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap-theme.min.css" integrity="sha384-fLW2N01lMqjakBkx3l/M9EahuwpSfeNvV63J5ezn3uZzapT0u7EYsXMjQV+0En5r" crossorigin="anonymous">
 		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js" integrity="sha384-0mSbJDEHialfmuBBQP6A4Qrprq5OVfW37PRR3j5ELqxss1yVqOtnepnHVP9aJ7xS" crossorigin="anonymous"></script>
 		<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+		<script src="index.js"></script>
 
 		<style>
 			.text-center {
@@ -80,37 +80,6 @@
 				margin-top: 10px;
 			}
 		</style>
-		<script>
-			$(function(){
-				$("#btn_entrar").click(function(){
-					if(verificarRadio("input[name='baladaFuncionando']") && verificarRadio("input[name='amizadeComDono']") && verificarRadio("input[name='sexoAmizadeNaBalada']") && verificarInput("#idade")) {
-						window.frm_entrar.submit();
-					} else {
-						alert("Você não preencheu todos os campos, por favor verifique a inserção");
-					}
-				});
-
-				function verificarRadio(element) {
-					var status = false;
-					$(element).each(function(){
-						if(this.checked) {
-							status =  true;
-						}
-					});
-
-					return status;
-				}
-
-				function verificarInput(element) {
-					var value = $(element).val();
-					if(value.length > 0) {
-						return true;
-					} else {
-						return false;
-					}
-				}
-			});
-		</script>
 	</head>
 	<body>
 		<form name="frm_entrar" id="frm_entrar" method="POST">
@@ -179,7 +148,7 @@
 
 								// Instanciando os objetos necessários para chamar as funções
 								$balada = new Balada((boolean) $_REQUEST['baladaFuncionando'], IDADE_MAXIMA);
-								$pessoa = new Pessoa( (int) $_REQUEST['idade'], $_REQUEST['sexoAmizadeNaBalada']);
+								$pessoa = new Pessoa((int) $_REQUEST['idade'], $_REQUEST['sexoAmizadeNaBalada']);
 
 								// Primeira mensagem dizendo se é ou não permitido o acesso do usuário a balada
 								if(entrarNaBalada($balada, $pessoa, $_REQUEST['amizadeComDono'])){
@@ -195,7 +164,6 @@
 									} else {
 										$mensagem = "Você tem uma amiga mulher na balada o/";
 									}
-
 									print mensagem($mensagem, "success");
 								} else {
 									print mensagem("Você não tem amigos na balada :/", "danger");
