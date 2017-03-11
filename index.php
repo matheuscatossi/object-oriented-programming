@@ -2,29 +2,56 @@
 
 	// Matheus Catossi - 11/03/2017
 
-	function entrarNaBalada($idade, $amizadeComDono, $sexoAmizadeNaBalada, $baladaFuncionando) {
+	define("IDADE_MAXIMA", 18);
 
-		if($baladaFuncionando == "true") {
-			$baladaFuncionando = true;
+	require_once("Balada.php");
+	require_once("Pessoa.php");
+
+	// Função que verifica se é possível entrar na balada
+	function entrarNaBalada($balada, $pessoa, $amizadeComDono) {
+		if($balada->getStatusBalada()){
+			if($balada->acessoIdade(($pessoa))) {
+	 			return true;
+	 		} else {
+				if($amizadeComDono == true) {
+					return true;
+				} else {
+					return false;
+				}
+	 		}
+	 	} else {
+	 		return false;
+	 	}
+	}	
+
+	// Função para verificar se existe uma amizade na abalada
+	function verificarAmizade($pessoa) {
+	 	if($pessoa->getAmizade()) {
+	 		return $pessoa->getAmizade();
+	 	} else {
+	 		return false;
+	 	}
+	}	
+
+	// Função que transforma texto para boolean - necessário por conta do value do radio
+	function textToBoolean($value){
+		if($value == "true") {
+			return true;
 		} else {
-			$baladaFuncionando = false;
+			return false;
 		}
+	}
 
-		if($amizadeComDono == "true") {
-			$amizadeComDono = true;
-		} else {
-			$amizadeComDono = false;
-		}
-
-		$balada = new Balada((boolean) $baladaFuncionando);
-		$amigo  = new Amigo($sexoAmizadeNaBalada);
-		return $balada->verificarAcesso((new Pessoa((int) $idade, (boolean) $amizadeComDono)));
-		
-		// print '<br>';
-		// print $balada->verificarAmizadeBalada($amigo);
-		// print '<br>';
-		// print $amigo->verificarSexoTexto();
-	}		
+	// Função que monta as mensagens de retorno após o clique no botão
+	function mensagem($texto, $class){
+		return "<div class='row'>
+			<div class='col-xs-12'>
+				<div class='alert alert-{$class} text-center'>
+					<h3>{$texto}</h3>
+				</div>
+			</div>
+		</div>";
+	}
 
 ?>
 
@@ -84,7 +111,6 @@
 				}
 			});
 		</script>
-
 	</head>
 	<body>
 		<form name="frm_entrar" id="frm_entrar" method="POST">
@@ -128,7 +154,8 @@
 									</div>
 									<div class="col-xs-6">
 									  <label><input type="radio" name="sexoAmizadeNaBalada" value="M" <?php print isset($_REQUEST['sexoAmizadeNaBalada']) && $_REQUEST['sexoAmizadeNaBalada'] == "M" ? "checked" : "";?>>  Masculino </label>
-									  <label><input type="radio" name="sexoAmizadeNaBalada" value="F" <?php print isset($_REQUEST['sexoAmizadeNaBalada']) && $_REQUEST['sexoAmizadeNaBalada'] == "F" ? "checked" : "";?>> Feminino </label>
+									  <label><input type="radio" name="sexoAmizadeNaBalada" value="F" <?php print isset($_REQUEST['sexoAmizadeNaBalada']) && $_REQUEST['sexoAmizadeNaBalada'] == "F" ? "checked" : "";?>> Feminino   </label>
+									  <label><input type="radio" name="sexoAmizadeNaBalada" value="N" <?php print isset($_REQUEST['sexoAmizadeNaBalada']) && $_REQUEST['sexoAmizadeNaBalada'] == "N" ? "checked" : "";?>> Não possui </label>
 									</div>
 								</div>
 								<div class="row">
@@ -139,36 +166,40 @@
 							</div>
 						</div>
 						<?php 
+
+							// Verificação se os valores foram preenchidos
 							if(isset($_REQUEST['idade']) 
 								&& isset($_REQUEST['amizadeComDono'] )
 								&& isset($_REQUEST['sexoAmizadeNaBalada']) 
 								&& isset($_REQUEST['baladaFuncionando'])){
 								
-								require_once("Balada.php");
-								require_once("Pessoa.php");
-								require_once("Amigo.php");
+								// Transformando text em boolean
+								$_REQUEST['baladaFuncionando'] = textToBoolean($_REQUEST['baladaFuncionando']);
+								$_REQUEST['amizadeComDono']    = textToBoolean($_REQUEST['amizadeComDono']);
 
-								if(entrarNaBalada($_REQUEST['idade'], $_REQUEST['amizadeComDono'], $_REQUEST['sexoAmizadeNaBalada'], $_REQUEST['baladaFuncionando'])){
-									?>
-										<div class="row">
-											<div class="col-xs-12">
-												<div class="alert alert-success text-center">
-													<h3>Acesso Permitido</h3>
-												</div>
-											</div>
-										</div>
-									<?php
+								// Instanciando os objetos necessários para chamar as funções
+								$balada = new Balada((boolean) $_REQUEST['baladaFuncionando'], IDADE_MAXIMA);
+								$pessoa = new Pessoa( (int) $_REQUEST['idade'], $_REQUEST['sexoAmizadeNaBalada']);
+
+								// Primeira mensagem dizendo se é ou não permitido o acesso do usuário a balada
+								if(entrarNaBalada($balada, $pessoa, $_REQUEST['amizadeComDono'])){
+									print mensagem("Acesso permitido", "success");
 								} else {
-									?>
-										<div class="row">
-											<div class="col-xs-12">
-												<div class="alert alert-danger text-center">
-													<h3>Acesso negado</h3>
-												</div>
-											</div>
-										</div>
-									<?php
-								};
+									print mensagem("Acesso negado", "danger");
+								}
+
+								// Segunda mensagem dizendo se o usuário possui ou não amizades na balada e se tiver identificar o sexo
+								if($amizade = verificarAmizade($pessoa)){
+									if($amizade == "MASCULINO") {
+										$mensagem = "Você tem um amigo homem na balada o/";
+									} else {
+										$mensagem = "Você tem uma amiga mulher na balada o/";
+									}
+
+									print mensagem($mensagem, "success");
+								} else {
+									print mensagem("Você não tem amigos na balada :/", "danger");
+								}
 							}
 						?>
 					</div>

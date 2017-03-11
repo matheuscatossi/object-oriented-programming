@@ -1,6 +1,7 @@
 <?php 
 
 	// Matheus Catossi - 11/03/2017
+	// Objeto criado para centralizar todas as funções de Pessoa
 
 	class Pessoa {
 
@@ -12,19 +13,15 @@
 			$this->amizade = $amizade;
 		}
 
-		function verificarAmizade() {
-			if($this->amizade == true) {
-				return true;
-			} else {
-				return false;
-			}
+
+		public function getIdade() {
+			return $this->idade;
 		}
 
-		function verificarIdade(){
-			if($this->idade >= 18) {
-				return true;
-			} else {
-				return false;
-			}
+		public function getAmizade(){
+			require_once("/Validacoes/PessoaValidacao.php");
+			$pessoaValidacao = new PessoaValidacao($this->amizade);
+
+			return $pessoaValidacao->verificarSexo(); 
 		}
 	}
